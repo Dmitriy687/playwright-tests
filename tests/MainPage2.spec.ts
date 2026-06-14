@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+const lightMode = ['light', 'dark'];
+
 interface Elements {
   locator(page: Page): Locator;
   name: string;
@@ -121,5 +123,14 @@ test.describe('Test main page', () => {
     await expect(page.getByRole('heading', { name: 'Playwright enables reliable' })).toContainText(
       'Playwright enables reliable web automation for testing, scripting, and AI agents.',
     );
+  });
+
+  lightMode.forEach((value) => {
+    test(`Check style of active ${value} mode`, async ({ page }) => {
+      await page.evaluate((value) => {
+        document.querySelector('html')?.setAttribute('data-theme', value);
+      }, value);
+      await expect(page).toHaveScreenshot(`pageWith${value}.png`);
+    });
   });
 });
